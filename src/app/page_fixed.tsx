@@ -119,12 +119,19 @@ export default function HomePage() {
             những mẹo hay trong cuộc sống hàng ngày
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/posts/create"
-              className="bg-white text-pink-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors"
-            >
-              Viết bài ngay
-            </Link>
+            {user && (
+              <>
+                <Link
+                  href="/posts/create"
+                  className="bg-white text-pink-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors"
+                >
+                  Viết bài ngay
+                </Link>
+                <div className="text-yellow-200 opacity-90">
+                  Xin chào, <strong>{user.nickname}</strong>! 👋
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -137,19 +144,8 @@ export default function HomePage() {
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {categories.map((category, index) => (
-              <Link
+              <div
                 key={index}
-                href={`/posts?category=${
-                  category.name === "Nấu ăn"
-                    ? "cooking"
-                    : category.name === "Chăm sóc nhà"
-                    ? "home"
-                    : category.name === "Chăm sóc bé"
-                    ? "baby"
-                    : category.name === "Làm đẹp"
-                    ? "beauty"
-                    : "tips"
-                }`}
                 className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-6 text-center border border-gray-100 cursor-pointer"
               >
                 <div
@@ -163,7 +159,7 @@ export default function HomePage() {
                 <p className="text-sm text-gray-600">
                   {category.count} bài viết
                 </p>
-              </Link>
+              </div>
             ))}
           </div>
         </div>
@@ -202,9 +198,7 @@ export default function HomePage() {
                     {post.excerpt}
                   </p>
                   <div className="flex items-center justify-between text-sm text-gray-500">
-                    <span className="text-pink-600 font-medium">
-                      #{post.category}
-                    </span>
+                    <span>bởi {post.author}</span>
                     <span>{post.createdAt}</span>
                   </div>
                   <div className="flex items-center space-x-4 mt-4 pt-4 border-t border-gray-100">
