@@ -43,9 +43,27 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* User Section - Hidden for anonymous users */}
+          {/* User Section - Show anonymous user info */}
           <div className="hidden md:flex items-center space-x-4">
-            {/* Không hiển thị thông tin user để giao diện gọn gàng */}
+            {user && (
+              <div className="flex items-center space-x-3">
+                <img
+                  src={user.avatar}
+                  alt={user.nickname}
+                  className="w-8 h-8 rounded-full"
+                />
+                <span className="text-sm font-medium text-gray-700">
+                  {user.nickname}
+                </span>
+                <button
+                  onClick={regenerateNickname}
+                  className="text-gray-500 hover:text-pink-600 p-1 rounded"
+                  title="Đổi nickname mới"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -86,7 +104,28 @@ export default function Header() {
                 Hồ sơ
               </Link>
 
-              {/* Mobile User Info - Hidden for cleaner look */}
+              {/* Mobile User Info */}
+              {user && (
+                <div className="border-t border-gray-200 pt-3 mt-3">
+                  <div className="flex items-center space-x-3 px-3 py-2">
+                    <img
+                      src={user.avatar}
+                      alt={user.nickname}
+                      className="w-8 h-8 rounded-full"
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                      {user.nickname}
+                    </span>
+                    <button
+                      onClick={regenerateNickname}
+                      className="text-gray-500 hover:text-pink-600 p-1 rounded"
+                      title="Đổi nickname mới"
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

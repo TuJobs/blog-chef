@@ -42,6 +42,22 @@ interface PostsData {
   };
 }
 
+interface LocalPost {
+  id: string;
+  title: string;
+  content: string;
+  excerpt: string;
+  category: string;
+  tags: string[];
+  author: string;
+  authorAvatar: string;
+  image?: string;
+  likes: number;
+  comments: number;
+  views: number;
+  createdAt: string;
+}
+
 export default function PostsPage() {
   const searchParams = useSearchParams();
   const [postsData, setPostsData] = useState<PostsData | null>(null);
@@ -56,6 +72,8 @@ export default function PostsPage() {
     async function fetchPosts() {
       try {
         setLoading(true);
+
+        // Thử API trước
         const params = new URLSearchParams();
         if (category) params.append("category", category);
         if (tag) params.append("tag", tag);
@@ -66,13 +84,81 @@ export default function PostsPage() {
         const result = await response.json();
 
         if (result.success) {
-          setPostsData(result.data);
+          setPostsData({
+            posts: result.posts,
+            pagination: result.pagination,
+          });
+          return;
         } else {
-          setError(result.message || "Không thể tải bài viết");
+          throw new Error("API failed");
         }
-      } catch (err) {
-        setError("Lỗi kết nối. Vui lòng thử lại sau.");
-        console.error("Error fetching posts:", err);
+      } catch (apiError) {
+        console.log("API unavailable, using localStorage:", apiError);
+
+        // Fallback: Đọc từ localStorage
+        try {
+          const localPosts = JSON.parse(
+            localStorage.getItem("blog_posts") || "[]"
+          );
+
+          // Filter posts
+          let filteredPosts: LocalPost[] = localPosts;
+
+          if (category) {
+            filteredPosts = filteredPosts.filter(
+              (post: LocalPost) => post.category === category
+            );
+          }
+
+          if (tag) {
+            filteredPosts = filteredPosts.filter(
+              (post: LocalPost) => post.tags && post.tags.includes(tag)
+            );
+          }
+
+          // Pagination
+          const limit = 12;
+          const skip = (page - 1) * limit;
+          const paginatedPosts = filteredPosts.slice(skip, skip + limit);
+          const total = filteredPosts.length;
+          const totalPages = Math.ceil(total / limit);
+
+          // Transform to match API format
+          const transformedPosts = paginatedPosts.map((post: LocalPost) => ({
+            _id: post.id,
+            title: post.title,
+            excerpt: post.excerpt,
+            category: post.category,
+            tags: post.tags || [],
+            authorType: "anonymous",
+            anonymousAuthor: {
+              nickname: post.author,
+              avatar: post.authorAvatar,
+            },
+            createdAt: post.createdAt,
+            views: post.views || 0,
+            reactions: {
+              likes: Array(post.likes || 0).fill({ user: "", createdAt: "" }),
+              hearts: [],
+            },
+            images: post.image ? [{ url: post.image, alt: post.title }] : [],
+          }));
+
+          setPostsData({
+            posts: transformedPosts,
+            pagination: {
+              page,
+              limit,
+              total,
+              totalPages,
+              hasNext: page < totalPages,
+              hasPrev: page > 1,
+            },
+          });
+        } catch (localError) {
+          console.error("Error reading from localStorage:", localError);
+          setError("Không thể tải bài viết. Hãy thử tạo bài viết đầu tiên!");
+        }
       } finally {
         setLoading(false);
       }

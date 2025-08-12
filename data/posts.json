@@ -1,0 +1,24 @@
+[
+  {
+    "id": "1754981949095",
+    "title": "Oke babty",
+    "content": "OKKKKKaaaaaa",
+    "excerpt": "OKKKKKaaaaaa",
+    "category": "cooking",
+    "tags": [
+      "tu01"
+    ],
+    "author": {
+      "id": "a6268ad829d7aeb4dda049e52e7bbf8e",
+      "nickname": "Bà Thu Vàng",
+      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=847&backgroundColor=ffeaa7,fab1a0,fd79a8,e17055,00b894,00cec9,6c5ce7,a29bfe"
+    },
+    "images": [],
+    "status": "published",
+    "views": 0,
+    "likes": 0,
+    "comments": 0,
+    "createdAt": "2025-08-12T06:59:09.095Z",
+    "updatedAt": "2025-08-12T06:59:09.095Z"
+  }
+]

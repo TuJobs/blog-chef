@@ -42,6 +42,7 @@ export default function CreatePostPage() {
     setIsSubmitting(true);
 
     try {
+      // Gửi bài viết lên server để lưu trữ chung
       const response = await fetch("/api/posts", {
         method: "POST",
         headers: {
@@ -54,6 +55,8 @@ export default function CreatePostPage() {
           image: formData.image,
           hashtags: formData.hashtags,
           authorId: user.id,
+          authorName: user.nickname,
+          authorAvatar: user.avatar,
         }),
       });
 
@@ -61,13 +64,78 @@ export default function CreatePostPage() {
 
       if (result.success) {
         alert(`Bài viết "${formData.title}" đã được đăng thành công! 🎉`);
-        router.push("/");
+        // Reset form
+        setFormData({
+          title: "",
+          content: "",
+          category: "cooking",
+          image: "",
+          hashtags: "",
+        });
+        router.push("/posts");
       } else {
-        alert(`Lỗi: ${result.message}`);
+        throw new Error(result.message || "API error");
       }
     } catch (error) {
-      console.error("Error creating post:", error);
-      alert("Có lỗi xảy ra khi đăng bài. Vui lòng thử lại!");
+      console.log("Database unavailable, saving to localStorage:", error);
+
+      // Fallback: Lưu vào localStorage
+      try {
+        const post = {
+          id: Date.now().toString(),
+          title: formData.title.trim(),
+          content: formData.content.trim(),
+          excerpt:
+            formData.content.length > 150
+              ? formData.content.substring(0, 150) + "..."
+              : formData.content,
+          category: formData.category,
+          tags: formData.hashtags
+            ? formData.hashtags
+                .split(/[\s,]+/)
+                .map((tag: string) => tag.replace("#", "").trim())
+                .filter((tag: string) => tag.length > 0)
+            : [],
+          author: user.nickname,
+          authorAvatar: user.avatar,
+          image: formData.image,
+          likes: 0,
+          comments: 0,
+          views: 0,
+          createdAt: new Date().toISOString(),
+        };
+
+        // Lấy posts hiện có từ localStorage
+        const existingPosts = JSON.parse(
+          localStorage.getItem("blog_posts") || "[]"
+        );
+        existingPosts.unshift(post); // Thêm vào đầu danh sách
+
+        // Giới hạn 50 bài viết trong localStorage
+        if (existingPosts.length > 50) {
+          existingPosts.splice(50);
+        }
+
+        localStorage.setItem("blog_posts", JSON.stringify(existingPosts));
+
+        alert(
+          `Bài viết "${formData.title}" đã được lưu thành công! 🎉\n(Đã lưu vào thiết bị của bạn)`
+        );
+
+        // Reset form
+        setFormData({
+          title: "",
+          content: "",
+          category: "cooking",
+          image: "",
+          hashtags: "",
+        });
+
+        router.push("/posts");
+      } catch (localError) {
+        console.error("Error saving to localStorage:", localError);
+        alert("Có lỗi xảy ra khi lưu bài viết. Vui lòng thử lại!");
+      }
     } finally {
       setIsSubmitting(false);
     }
