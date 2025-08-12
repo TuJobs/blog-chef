@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
           },
           excerpt:
             content.length > 150 ? content.substring(0, 150) + "..." : content,
-          images: image ? [{ url: image, alt: title }] : [],
+          images: image ? [image] : [],
           status: "published",
           comments: 0,
         },

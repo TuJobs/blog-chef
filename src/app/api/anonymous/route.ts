@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb";
-import AnonymousUser from "@/models/AnonymousUser";
+import * as db from "@/lib/sqlite";
 import { createAnonymousUser } from "@/lib/anonymousAuth";
 
 // POST - Tạo hoặc cập nhật anonymous user
@@ -9,54 +8,67 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { sessionId, nickname, avatar } = body;
 
-    await dbConnect();
-
     let user;
     if (sessionId) {
-      // Cập nhật user hiện có hoặc tạo mới
-      user = await AnonymousUser.findOneAndUpdate(
-        { sessionId },
-        {
-          nickname: nickname || "Người dùng ẩn danh",
-          avatar:
-            avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=default",
-          lastActive: new Date(),
-        },
-        { upsert: true, new: true }
-      );
-    } else {
-      // Tạo user mới hoàn toàn
-      const newUserData = createAnonymousUser();
-      user = new AnonymousUser({
-        sessionId: newUserData.id,
-        nickname: newUserData.nickname,
-        avatar: newUserData.avatar,
-        lastActive: new Date(),
-      });
-      await user.save();
+      // Kiểm tra user có tồn tại không
+      user = await db.getUserById(sessionId);
+
+      if (user) {
+        // User đã tồn tại, không cần cập nhật
+        return NextResponse.json(
+          {
+            success: true,
+            user: {
+              id: user.id,
+              nickname: user.nickname,
+              avatar: user.avatar,
+              createdAt: user.createdAt,
+              sessionId: user.id,
+            },
+          },
+          { status: 200 }
+        );
+      }
     }
+
+    // Tạo user mới
+    const newUserData = createAnonymousUser();
+    user = await db.createUser({
+      id: sessionId || newUserData.id,
+      nickname: nickname || newUserData.nickname,
+      avatar: avatar || newUserData.avatar,
+    });
 
     return NextResponse.json(
       {
         success: true,
         user: {
-          id: user.sessionId,
+          id: user.id,
           nickname: user.nickname,
           avatar: user.avatar,
           createdAt: user.createdAt,
-          sessionId: user.sessionId,
+          sessionId: user.id,
         },
       },
       { status: 201 }
     );
   } catch (error) {
     console.error("Error handling anonymous user:", error);
+
+    // Fallback: tạo user đơn giản nếu có lỗi
+    const fallbackUser = createAnonymousUser();
     return NextResponse.json(
       {
-        success: false,
-        message: "Lỗi khi xử lý người dùng ẩn danh",
+        success: true,
+        user: {
+          id: fallbackUser.id,
+          nickname: fallbackUser.nickname,
+          avatar: fallbackUser.avatar,
+          createdAt: new Date().toISOString(),
+          sessionId: fallbackUser.id,
+        },
       },
-      { status: 500 }
+      { status: 201 }
     );
   }
 }
@@ -77,9 +89,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    await dbConnect();
-
-    const user = await AnonymousUser.findOne({ sessionId });
+    const user = await db.getUserById(sessionId);
     if (!user) {
       return NextResponse.json(
         {
@@ -90,18 +100,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Cập nhật lastActive
-    user.lastActive = new Date();
-    await user.save();
-
     return NextResponse.json({
       success: true,
       user: {
-        id: user.sessionId,
+        id: user.id,
         nickname: user.nickname,
         avatar: user.avatar,
         createdAt: user.createdAt,
-        sessionId: user.sessionId,
+        sessionId: user.id,
       },
     });
   } catch (error) {

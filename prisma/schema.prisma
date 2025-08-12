@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// User Model - Anonymous users
+model User {
+  id        String   @id @default(cuid())
+  nickname  String
+  avatar    String
+  createdAt DateTime @default(now())
+
+  // Relations
+  posts     Post[]
+  comments  Comment[]
+  reactions Reaction[]
+
+  @@map("users")
+}
+
+// Post Model
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  category  String
+  tags      String[] // Store as JSON array
+  likes     Int      @default(0)
+  views     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  author     User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId   String
+  comments   Comment[]
+  reactions  Reaction[]
+
+  @@map("posts")
+}
+
+// Comment Model
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  likes     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  post     Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId   String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId String
+
+  @@map("comments")
+}
+
+// Reaction Model (likes, hearts, etc.)
+model Reaction {
+  id        String      @id @default(cuid())
+  type      ReactionType @default(LIKE)
+  createdAt DateTime    @default(now())
+
+  // Relations
+  post     Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId   String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId String
+
+  // Unique constraint: one reaction per user per post
+  @@unique([postId, authorId])
+  @@map("reactions")
+}
+
+enum ReactionType {
+  LIKE
+  HEART
+  LAUGH
+  ANGRY
+  SAD
+}

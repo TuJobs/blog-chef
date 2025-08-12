@@ -83,10 +83,8 @@ export default function PostsPage() {
   const getCategoryName = (category: string) => {
     const categoryMap: Record<string, string> = {
       cooking: "Nấu ăn",
-      home: "Chăm sóc nhà",
       household: "Gia đình",
       beauty: "Làm đẹp",
-      baby: "Chăm sóc bé",
       parenting: "Nuôi con",
       health: "Sức khỏe",
       lifestyle: "Lối sống",
@@ -241,14 +239,10 @@ export default function PostsPage() {
                           ? "🍳"
                           : post.category === "beauty"
                           ? "💄"
-                          : post.category === "baby"
-                          ? "👶"
                           : post.category === "parenting"
                           ? "👶"
                           : post.category === "health"
                           ? "🏥"
-                          : post.category === "home"
-                          ? "🏠"
                           : post.category === "household"
                           ? "🏠"
                           : post.category === "lifestyle"

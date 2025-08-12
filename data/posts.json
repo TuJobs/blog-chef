@@ -1,5 +1,23 @@
 [
   {
+    "id": "1754988736820",
+    "title": "VAIIF",
+    "content": "NHADAS",
+    "excerpt": "NHADAS",
+    "category": "household",
+    "tags": [
+      "aaaa"
+    ],
+    "authorId": "0b5cc30a8e37bd34935d84c58a305f81",
+    "images": [],
+    "status": "published",
+    "likes": 0,
+    "views": 0,
+    "comments": 0,
+    "createdAt": "2025-08-12T08:52:16.820Z",
+    "updatedAt": "2025-08-12T08:52:16.820Z"
+  },
+  {
     "id": "1754981949095",
     "title": "Oke babty",
     "content": "OKKKKKaaaaaa",
@@ -8,17 +26,13 @@
     "tags": [
       "tu01"
     ],
-    "author": {
-      "id": "a6268ad829d7aeb4dda049e52e7bbf8e",
-      "nickname": "Bà Thu Vàng",
-      "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=847&backgroundColor=ffeaa7,fab1a0,fd79a8,e17055,00b894,00cec9,6c5ce7,a29bfe"
-    },
+    "authorId": "a6268ad829d7aeb4dda049e52e7bbf8e",
     "images": [],
     "status": "published",
-    "views": 0,
-    "likes": 0,
+    "views": 76,
+    "likes": 1,
     "comments": 0,
     "createdAt": "2025-08-12T06:59:09.095Z",
-    "updatedAt": "2025-08-12T06:59:09.095Z"
+    "updatedAt": "2025-08-12T10:00:41.619Z"
   }
 ]

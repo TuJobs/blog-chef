@@ -1,0 +1,29 @@
+[
+  {
+    "content": "aaaaa",
+    "postId": "1754981949095",
+    "authorId": "e5494c2b10df95dc8db930d681922ed1",
+    "id": "1754992545735",
+    "likes": 0,
+    "createdAt": "2025-08-12T09:55:45.735Z",
+    "updatedAt": "2025-08-12T09:55:45.735Z"
+  },
+  {
+    "content": "Bài viết rất hay! Cảm ơn chị đã chia sẻ!",
+    "postId": "1754981949095",
+    "authorId": "user789",
+    "id": "1754989531447",
+    "likes": 0,
+    "createdAt": "2025-08-12T09:05:31.447Z",
+    "updatedAt": "2025-08-12T09:05:31.447Z"
+  },
+  {
+    "content": "Bài viết hay quá! Cảm ơn chị chia sẻ!",
+    "postId": "1754981949095",
+    "authorId": "user123",
+    "id": "1754986252852",
+    "likes": 0,
+    "createdAt": "2025-08-12T08:10:52.852Z",
+    "updatedAt": "2025-08-12T08:10:52.852Z"
+  }
+]

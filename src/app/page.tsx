@@ -127,7 +127,7 @@ export default function HomePage() {
     },
     {
       name: "Chăm sóc nhà",
-      value: "home",
+      value: "household",
       icon: Home,
       color: "bg-blue-100 text-blue-600",
       count: 89,
@@ -226,7 +226,7 @@ export default function HomePage() {
                   <div className="flex items-center justify-between mb-3">
                     <span className="px-3 py-1 bg-orange-100 text-orange-600 text-xs font-medium rounded-full">
                       {post.category === "cooking" && "Nấu ăn"}
-                      {post.category === "home" && "Chăm sóc nhà"}
+                      {post.category === "household" && "Chăm sóc nhà"}
                       {post.category === "beauty" && "Làm đẹp"}
                       {post.category === "baby" && "Chăm sóc bé"}
                     </span>

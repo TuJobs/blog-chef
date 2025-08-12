@@ -1,0 +1,50 @@
+[
+  {
+    "id": "user123",
+    "nickname": "Chị Lan",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=user123",
+    "createdAt": "2025-08-12T08:10:52.849Z"
+  },
+  {
+    "id": "0b5cc30a8e37bd34935d84c58a305f81",
+    "nickname": "Chị Mai Xinh",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=76&backgroundColor=ffeaa7,fab1a0,fd79a8,e17055,00b894,00cec9,6c5ce7,a29bfe",
+    "createdAt": "2025-08-12T08:52:16.819Z"
+  },
+  {
+    "id": "user789",
+    "nickname": "Chị Mai",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=user789",
+    "createdAt": "2025-08-12T09:05:31.446Z"
+  },
+  {
+    "id": "a55ecc8e4d54d8f738c6a16c83da2776",
+    "nickname": "Cô Đông Ấm",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=721&backgroundColor=ffeaa7,fab1a0,fd79a8,e17055,00b894,00cec9,6c5ce7,a29bfe",
+    "createdAt": "2025-08-12T09:08:45.043Z"
+  },
+  {
+    "id": "325c5e761c36de625c28f480b8579e94",
+    "nickname": "Cô Hương Thơm",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=224&backgroundColor=ffeaa7,fab1a0,fd79a8,e17055,00b894,00cec9,6c5ce7,a29bfe",
+    "createdAt": "2025-08-12T09:08:54.979Z"
+  },
+  {
+    "id": "test123",
+    "nickname": "Chị Nấu Giỏi",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=281&backgroundColor=ffeaa7,fab1a0,fd79a8,e17055,00b894,00cec9,6c5ce7,a29bfe",
+    "createdAt": "2025-08-12T09:11:23.023Z"
+  },
+  {
+    "id": "0ddf98d10c276bcfbf9f2f5428600005",
+    "nickname": "Chị Oanh Vui",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=416&backgroundColor=ffeaa7,fab1a0,fd79a8,e17055,00b894,00cec9,6c5ce7,a29bfe",
+    "createdAt": "2025-08-12T09:19:10.664Z"
+  },
+  {
+    "id": "e5494c2b10df95dc8db930d681922ed1",
+    "nickname": "Chị Hoa Tươi",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=633&backgroundColor=ffeaa7,fab1a0,fd79a8,e17055,00b894,00cec9,6c5ce7,a29bfe",
+    "createdAt": "2025-08-12T09:23:50.146Z"
+  }
+]
