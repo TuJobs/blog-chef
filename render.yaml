@@ -1,0 +1,23 @@
+version: 2
+services:
+  - type: web
+    name: blog-chef
+    env: node
+    region: singapore
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        fromService:
+          type: web
+          name: blog-chef
+          property: port
+      - key: MONGODB_URI
+        fromDatabase:
+          name: blog-chef-db
+          property: connectionString
+    autoDeploy: false

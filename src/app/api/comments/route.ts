@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get comments for the post
-    let comments = await getCommentsByPostId(postId);
+    const comments = await getCommentsByPostId(postId);
 
     // Sort by createdAt (newest first)
     comments.sort(

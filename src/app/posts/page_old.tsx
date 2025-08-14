@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/Header";
 import Link from "next/link";
-import { Heart, MessageCircle, Eye, Hash } from "lucide-react";
+import { Heart, MessageCircle, Eye, Hash, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 
 interface Post {
