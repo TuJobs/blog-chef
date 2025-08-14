@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import * as db from "@/lib/sqlite";
+import * as db from "@/lib/postgres";
 
 // GET - Lấy chi tiết bài viết theo ID
 export async function GET(
@@ -33,7 +33,7 @@ export async function GET(
     }
 
     // Get author information
-    const author = await db.getUserById(post.authorId);
+    const author = await db.getUserById(post.author_id);
 
     // Update view count
     await db.incrementPostViews(id);
@@ -44,14 +44,14 @@ export async function GET(
       .filter((p) => p.id !== id && p.category === post.category)
       .sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       )
       .slice(0, 3);
 
     // Enrich related posts with author info
     const relatedPostsWithAuthors = await Promise.all(
       relatedPosts.map(async (relatedPost) => {
-        const relatedAuthor = await db.getUserById(relatedPost.authorId);
+        const relatedAuthor = await db.getUserById(relatedPost.author_id);
         return {
           id: relatedPost.id,
           title: relatedPost.title,
@@ -60,9 +60,9 @@ export async function GET(
             nickname: relatedAuthor?.nickname || "Người dùng ẩn danh",
             avatar:
               relatedAuthor?.avatar ||
-              `https://api.dicebear.com/7.x/avataaars/svg?seed=${relatedPost.authorId}`,
+              `https://api.dicebear.com/7.x/avataaars/svg?seed=${relatedPost.author_id}`,
           },
-          createdAt: relatedPost.createdAt,
+          createdAt: relatedPost.created_at,
           likes: relatedPost.likes || 0,
         };
       })
@@ -75,8 +75,8 @@ export async function GET(
         nickname: author?.nickname || "Người dùng ẩn danh",
         avatar:
           author?.avatar ||
-          `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.authorId}`,
-        id: post.authorId,
+          `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.author_id}`,
+        id: post.author_id,
       },
       views: (post.views || 0) + 1,
     };
@@ -142,7 +142,7 @@ export async function PUT(
     }
 
     // Check if user is the author
-    if (existingPost.authorId !== authorId) {
+    if (existingPost.author_id !== authorId) {
       return NextResponse.json(
         {
           success: false,
@@ -172,7 +172,7 @@ export async function PUT(
     }
 
     // Get author information
-    const author = await db.getUserById(updatedPost.authorId);
+    const author = await db.getUserById(updatedPost.author_id);
 
     // Return updated post with author info
     const postWithAuthor = {
@@ -181,8 +181,8 @@ export async function PUT(
         nickname: author?.nickname || "Người dùng ẩn danh",
         avatar:
           author?.avatar ||
-          `https://api.dicebear.com/7.x/avataaars/svg?seed=${updatedPost.authorId}`,
-        id: updatedPost.authorId,
+          `https://api.dicebear.com/7.x/avataaars/svg?seed=${updatedPost.author_id}`,
+        id: updatedPost.author_id,
       },
     };
 
@@ -236,7 +236,7 @@ export async function DELETE(
     }
 
     // Check if user is the author
-    if (existingPost.authorId !== authorId) {
+    if (existingPost.author_id !== authorId) {
       return NextResponse.json(
         {
           success: false,

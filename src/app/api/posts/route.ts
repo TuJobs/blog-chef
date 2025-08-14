@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getPosts, createPost, createUser, getUserById } from "@/lib/sqlite";
+import { getPosts, createPost, createUser, getUserById } from "@/lib/postgres";
 
 // POST - Tạo bài viết mới
 export async function POST(request: NextRequest) {
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       tags: processedHashtags,
       images: image ? [image] : [],
       status: "published",
-      authorId,
+      author_id: authorId, // Use snake_case for PostgreSQL
     });
 
     return NextResponse.json(
@@ -114,10 +114,10 @@ export async function GET(request: NextRequest) {
       posts = posts.filter((post) => post.tags.includes(tag));
     }
 
-    // Sort by createdAt (newest first)
+    // Sort by created_at (newest first)
     posts.sort(
       (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
 
     // Get total count for pagination
@@ -130,7 +130,7 @@ export async function GET(request: NextRequest) {
     // Enrich posts with author information
     const postsWithAuthors = await Promise.all(
       paginatedPosts.map(async (post) => {
-        const author = await getUserById(post.authorId);
+        const author = await getUserById(post.author_id);
         return {
           id: post.id,
           title: post.title,
@@ -142,17 +142,17 @@ export async function GET(request: NextRequest) {
           category: post.category,
           tags: post.tags,
           author: author || {
-            id: post.authorId,
+            id: post.author_id,
             nickname: "Người dùng ẩn danh",
-            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.authorId}`,
+            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.author_id}`,
           },
           images: [],
           status: "published",
           views: post.views || 0,
           likes: post.likes || 0,
           comments: 0,
-          createdAt: post.createdAt,
-          updatedAt: post.updatedAt,
+          createdAt: post.created_at, // Convert back to camelCase for frontend
+          updatedAt: post.updated_at, // Convert back to camelCase for frontend
         };
       })
     );
