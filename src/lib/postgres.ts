@@ -1,7 +1,15 @@
 import { neon } from "@neondatabase/serverless";
 
-// Neon Database connection
-const sql = neon(process.env.NEON_DATABASE_URL || "");
+// Neon Database connection with fallback
+const DATABASE_URL = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL;
+
+// Only initialize if we have a database URL
+const sql = DATABASE_URL ? neon(DATABASE_URL) : null;
+
+// Helper function to check if database is available
+function isDatabaseAvailable(): boolean {
+  return !!sql && !!DATABASE_URL;
+}
 
 // Types
 export interface User {
@@ -48,8 +56,12 @@ export interface Reaction {
 
 // Initialize database tables
 export async function initDatabase() {
-  if (!process.env.POSTGRES_URL && !process.env.NEON_DATABASE_URL) {
+  if (!DATABASE_URL) {
     throw new Error("Database URL not configured");
+  }
+
+  if (!sql) {
+    throw new Error("Database connection not available");
   }
 
   try {

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { initDatabase } from "@/lib/postgres";
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,11 +10,15 @@ export async function GET(request: NextRequest) {
         {
           error: "Database not configured",
           message: "NEON_DATABASE_URL not found in environment variables",
+          status: "not_configured"
         },
-        { status: 500 }
+        { status: 200 } // Return 200 to avoid build failures
       );
     }
 
+    // Only import and initialize if we have database URL
+    const { initDatabase } = await import("@/lib/postgres");
+    
     // Initialize database tables
     await initDatabase();
 

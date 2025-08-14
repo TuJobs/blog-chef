@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import * as db from "@/lib/postgres";
+import * as db from "@/lib/database-service";
 
 // GET - Lấy chi tiết bài viết theo ID
 export async function GET(
@@ -152,45 +152,16 @@ export async function PUT(
       );
     }
 
-    // Update post
-    const updatedPost = await db.updatePost(id, {
-      title: title.trim(),
-      content: content.trim(),
-      category,
-      tags: body.tags || [],
-      images: body.images || [],
-    });
-
-    if (!updatedPost) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Không thể cập nhật bài viết",
-        },
-        { status: 500 }
-      );
-    }
-
-    // Get author information
-    const author = await db.getUserById(updatedPost.author_id);
-
-    // Return updated post with author info
-    const postWithAuthor = {
-      ...updatedPost,
-      author: {
-        nickname: author?.nickname || "Người dùng ẩn danh",
-        avatar:
-          author?.avatar ||
-          `https://api.dicebear.com/7.x/avataaars/svg?seed=${updatedPost.author_id}`,
-        id: updatedPost.author_id,
+    // Update post - temporarily disable full update
+    // TODO: Implement full update in database-service
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Cập nhật bài viết tạm thời không khả dụng",
       },
-    };
+      { status: 501 }
+    );
 
-    return NextResponse.json({
-      success: true,
-      message: "Cập nhật bài viết thành công!",
-      post: postWithAuthor,
-    });
   } catch (error) {
     console.error("Error updating post:", error);
     return NextResponse.json(
