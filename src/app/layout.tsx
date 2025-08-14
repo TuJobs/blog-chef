@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { AnonymousUserProvider } from "@/contexts/AnonymousUserContext";
 
@@ -28,6 +29,10 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body className="font-sans antialiased bg-gradient-to-br from-pink-50 to-orange-50 min-h-screen">
+        <Script
+          src="https://cdn.tailwindcss.com"
+          strategy="beforeInteractive"
+        />
         <AnonymousUserProvider>{children}</AnonymousUserProvider>
       </body>
     </html>
