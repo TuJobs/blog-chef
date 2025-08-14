@@ -28,8 +28,12 @@ export const posts = pgTable("posts", {
   excerpt: text("excerpt"),
   category: text("category").notNull(),
   tags: jsonb("tags").$type<string[]>().default([]),
-  images: jsonb("images").$type<{ url: string; publicId: string; alt?: string }[]>().default([]),
-  authorId: uuid("author_id").references(() => users.id).notNull(),
+  images: jsonb("images")
+    .$type<{ url: string; publicId: string; alt?: string }[]>()
+    .default([]),
+  authorId: uuid("author_id")
+    .references(() => users.id)
+    .notNull(),
   status: text("status").default("published"),
   views: integer("views").default(0),
   likes: integer("likes").default(0),
@@ -42,8 +46,12 @@ export const posts = pgTable("posts", {
 export const comments: any = pgTable("comments", {
   id: uuid("id").primaryKey().defaultRandom(),
   content: text("content").notNull(),
-  postId: uuid("post_id").references(() => posts.id, { onDelete: "cascade" }).notNull(),
-  authorId: uuid("author_id").references(() => users.id).notNull(),
+  postId: uuid("post_id")
+    .references(() => posts.id, { onDelete: "cascade" })
+    .notNull(),
+  authorId: uuid("author_id")
+    .references(() => users.id)
+    .notNull(),
   parentId: uuid("parent_id").references((): any => comments.id),
   likes: integer("likes").default(0),
   createdAt: timestamp("created_at").defaultNow(),
@@ -55,8 +63,12 @@ export const reactions = pgTable("reactions", {
   id: uuid("id").primaryKey().defaultRandom(),
   type: text("type").notNull().default("LIKE"), // LIKE, HEART, etc.
   postId: uuid("post_id").references(() => posts.id, { onDelete: "cascade" }),
-  commentId: uuid("comment_id").references(() => comments.id, { onDelete: "cascade" }),
-  authorId: uuid("author_id").references(() => users.id).notNull(),
+  commentId: uuid("comment_id").references(() => comments.id, {
+    onDelete: "cascade",
+  }),
+  authorId: uuid("author_id")
+    .references(() => users.id)
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

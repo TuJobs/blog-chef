@@ -5,11 +5,15 @@ export async function GET(request: NextRequest) {
   try {
     // Check if cloud database is configured
     if (!process.env.NEON_DATABASE_URL) {
-      return NextResponse.json({
-        success: false,
-        error: "Cloud database not configured. Please setup Neon database first.",
-        message: "See CLOUD-SETUP.md for configuration instructions"
-      }, { status: 503 });
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Cloud database not configured. Please setup Neon database first.",
+          message: "See CLOUD-SETUP.md for configuration instructions",
+        },
+        { status: 503 }
+      );
     }
 
     const { searchParams } = new URL(request.url);
@@ -47,7 +51,7 @@ export async function GET(request: NextRequest) {
       });
 
       const totalPages = Math.ceil(result.total / limit);
-      
+
       return NextResponse.json({
         success: true,
         posts: result.posts,
@@ -79,11 +83,15 @@ export async function POST(request: NextRequest) {
   try {
     // Check if cloud database is configured
     if (!process.env.NEON_DATABASE_URL) {
-      return NextResponse.json({
-        success: false,
-        error: "Cloud database not configured. Please setup Neon database first.",
-        message: "See CLOUD-SETUP.md for configuration instructions"
-      }, { status: 503 });
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Cloud database not configured. Please setup Neon database first.",
+          message: "See CLOUD-SETUP.md for configuration instructions",
+        },
+        { status: 503 }
+      );
     }
 
     const body = await request.json();

@@ -1,6 +1,13 @@
 import { db } from "./database";
 import { users, posts, comments, reactions, categories } from "./schema";
-import type { User, NewUser, Post, NewPost, Comment, NewComment } from "./schema";
+import type {
+  User,
+  NewUser,
+  Post,
+  NewPost,
+  Comment,
+  NewComment,
+} from "./schema";
 import { eq, desc, sql, and, or, ilike } from "drizzle-orm";
 
 // User operations
@@ -21,11 +28,17 @@ export class UserService {
   }
 
   static async findByNickname(nickname: string): Promise<User | null> {
-    const [user] = await db.select().from(users).where(eq(users.nickname, nickname));
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.nickname, nickname));
     return user || null;
   }
 
-  static async update(id: string, userData: Partial<NewUser>): Promise<User | null> {
+  static async update(
+    id: string,
+    userData: Partial<NewUser>
+  ): Promise<User | null> {
     const [user] = await db
       .update(users)
       .set({ ...userData, updatedAt: new Date() })
@@ -47,14 +60,22 @@ export class PostService {
     return post || null;
   }
 
-  static async findAll(options: {
-    limit?: number;
-    offset?: number;
-    category?: string;
-    authorId?: string;
-    status?: string;
-  } = {}): Promise<{ posts: Post[]; total: number }> {
-    const { limit = 10, offset = 0, category, authorId, status = "published" } = options;
+  static async findAll(
+    options: {
+      limit?: number;
+      offset?: number;
+      category?: string;
+      authorId?: string;
+      status?: string;
+    } = {}
+  ): Promise<{ posts: Post[]; total: number }> {
+    const {
+      limit = 10,
+      offset = 0,
+      category,
+      authorId,
+      status = "published",
+    } = options;
 
     let query = db.select().from(posts).where(eq(posts.status, status));
 
@@ -101,7 +122,10 @@ export class PostService {
       .limit(20);
   }
 
-  static async update(id: string, postData: Partial<NewPost>): Promise<Post | null> {
+  static async update(
+    id: string,
+    postData: Partial<NewPost>
+  ): Promise<Post | null> {
     const [post] = await db
       .update(posts)
       .set({ ...postData, updatedAt: new Date() })
@@ -150,10 +174,10 @@ export class PostService {
 export class CommentService {
   static async create(commentData: NewComment): Promise<Comment> {
     const [comment] = await db.insert(comments).values(commentData).returning();
-    
+
     // Update post comments count
     await PostService.updateStats(commentData.postId);
-    
+
     return comment;
   }
 
@@ -166,11 +190,17 @@ export class CommentService {
   }
 
   static async findById(id: string): Promise<Comment | null> {
-    const [comment] = await db.select().from(comments).where(eq(comments.id, id));
+    const [comment] = await db
+      .select()
+      .from(comments)
+      .where(eq(comments.id, id));
     return comment || null;
   }
 
-  static async update(id: string, commentData: Partial<NewComment>): Promise<Comment | null> {
+  static async update(
+    id: string,
+    commentData: Partial<NewComment>
+  ): Promise<Comment | null> {
     const [comment] = await db
       .update(comments)
       .set({ ...commentData, updatedAt: new Date() })
@@ -184,7 +214,7 @@ export class CommentService {
     if (!comment) return false;
 
     const result = await db.delete(comments).where(eq(comments.id, id));
-    
+
     // Update post stats
     if (comment.postId) {
       await PostService.updateStats(comment.postId);
@@ -206,7 +236,10 @@ export class ReactionService {
 
     // Check if reaction already exists
     const whereClause = commentId
-      ? and(eq(reactions.commentId, commentId), eq(reactions.authorId, authorId))
+      ? and(
+          eq(reactions.commentId, commentId),
+          eq(reactions.authorId, authorId)
+        )
       : and(eq(reactions.postId, postId!), eq(reactions.authorId, authorId));
 
     const [existingReaction] = await db
@@ -217,7 +250,7 @@ export class ReactionService {
     if (existingReaction) {
       // Remove reaction
       await db.delete(reactions).where(eq(reactions.id, existingReaction.id));
-      
+
       // Update stats
       if (postId) {
         await PostService.updateStats(postId);

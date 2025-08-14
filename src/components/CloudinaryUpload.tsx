@@ -39,7 +39,7 @@ export default function CloudinaryUpload({
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        
+
         if (!file.type.startsWith("image/")) {
           alert("Chỉ chấp nhận file hình ảnh");
           continue;
@@ -155,9 +155,10 @@ export default function CloudinaryUpload({
           onDragOver={handleDragOver}
           className={`
             border-2 border-dashed rounded-lg p-8 text-center transition-colors
-            ${uploading 
-              ? 'border-blue-300 bg-blue-50' 
-              : 'border-gray-300 hover:border-gray-400 bg-gray-50'
+            ${
+              uploading
+                ? "border-blue-300 bg-blue-50"
+                : "border-gray-300 hover:border-gray-400 bg-gray-50"
             }
           `}
         >
@@ -200,7 +201,8 @@ export default function CloudinaryUpload({
                   </label>
                 </p>
                 <p className="text-xs text-gray-500">
-                  PNG, JPG, WEBP up to 10MB ({currentImages.length}/{maxFiles} hình)
+                  PNG, JPG, WEBP up to 10MB ({currentImages.length}/{maxFiles}{" "}
+                  hình)
                 </p>
               </div>
             </div>
