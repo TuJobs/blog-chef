@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import * as db from "@/lib/sqlite";
+import * as db from "@/lib/database-service";
 
 // GET - Lấy thống kê tổng quan
 export async function GET(request: NextRequest) {
@@ -25,15 +25,15 @@ export async function GET(request: NextRequest) {
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
     const recentPosts = posts.filter(
-      (post) => new Date(post.createdAt) >= sevenDaysAgo
+      (post) => new Date(post.created_at) >= sevenDaysAgo
     ).length;
 
     const recentComments = comments.filter(
-      (comment) => new Date(comment.createdAt) >= sevenDaysAgo
+      (comment) => new Date(comment.created_at) >= sevenDaysAgo
     ).length;
 
     const recentReactions = reactions.filter(
-      (reaction) => new Date(reaction.createdAt) >= sevenDaysAgo
+      (reaction) => new Date(reaction.created_at) >= sevenDaysAgo
     ).length;
 
     // Top posts by likes - enrich with author info
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
 
     const topPosts = await Promise.all(
       topPostsData.map(async (post) => {
-        const author = await db.getUserById(post.authorId);
+        const author = await db.getUserById(post.author_id);
         return {
           id: post.id,
           title: post.title,

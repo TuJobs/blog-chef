@@ -1,8 +1,12 @@
-// Database service with fallback mechanism
-// Uses Neon PostgreSQL if available, otherwise falls back to JSON files
+// Database service using Neon PostgreSQL
+// Simplified to use only Neon database
 
 import { neon } from "@neondatabase/serverless";
-import * as sqliteDB from "./sqlite";
+
+// Disable SSL certificate validation for development
+if (process.env.NODE_ENV === 'development') {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
 
 // Types
 export interface User {
@@ -47,17 +51,15 @@ export interface Reaction {
   created_at: string;
 }
 
-// Check if Neon is available
+// Initialize Neon database connection
 const DATABASE_URL = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL;
-const isNeonAvailable = !!DATABASE_URL;
-const sql = isNeonAvailable ? neon(DATABASE_URL) : null;
+if (!DATABASE_URL) {
+  throw new Error("NEON_DATABASE_URL environment variable is required");
+}
+const sql = neon(DATABASE_URL);
 
-// Initialize database tables (only for Neon)
+// Initialize database tables
 export async function initDatabase() {
-  if (!isNeonAvailable || !sql) {
-    throw new Error("Neon database not configured");
-  }
-
   try {
     // Create users table
     await sql`
@@ -69,7 +71,7 @@ export async function initDatabase() {
       )
     `;
 
-    // Create posts table  
+    // Create posts table
     await sql`
       CREATE TABLE IF NOT EXISTS posts (
         id TEXT PRIMARY KEY,
@@ -123,15 +125,6 @@ export async function initDatabase() {
 
 // User operations
 export async function getUsers(): Promise<User[]> {
-  if (!isNeonAvailable || !sql) {
-    // Fallback to SQLite/JSON
-    const users = await sqliteDB.getUsers();
-    return users.map(user => ({
-      ...user,
-      created_at: user.createdAt
-    }));
-  }
-
   try {
     const users = await sql`SELECT * FROM users ORDER BY created_at DESC`;
     return users as User[];
@@ -142,15 +135,6 @@ export async function getUsers(): Promise<User[]> {
 }
 
 export async function getUserById(id: string): Promise<User | null> {
-  if (!isNeonAvailable || !sql) {
-    // Fallback to SQLite/JSON
-    const user = await sqliteDB.getUserById(id);
-    return user ? {
-      ...user,
-      created_at: user.createdAt
-    } : null;
-  }
-
   try {
     const users = await sql`SELECT * FROM users WHERE id = ${id}`;
     return (users[0] as User) || null;
@@ -160,20 +144,9 @@ export async function getUserById(id: string): Promise<User | null> {
   }
 }
 
-export async function createUser(user: Omit<User, "created_at">): Promise<User> {
-  if (!isNeonAvailable || !sql) {
-    // Fallback to SQLite/JSON
-    const createdUser = await sqliteDB.createUser({
-      id: user.id,
-      nickname: user.nickname,
-      avatar: user.avatar
-    });
-    return {
-      ...createdUser,
-      created_at: createdUser.createdAt
-    };
-  }
-
+export async function createUser(
+  user: Omit<User, "created_at">
+): Promise<User> {
   try {
     const newUser = await sql`
       INSERT INTO users (id, nickname, avatar) 
@@ -192,27 +165,6 @@ export async function createUser(user: Omit<User, "created_at">): Promise<User> 
 
 // Post operations
 export async function getPosts(): Promise<Post[]> {
-  if (!isNeonAvailable || !sql) {
-    // Fallback to SQLite/JSON
-    const posts = await sqliteDB.getPosts();
-    return posts.map(post => ({
-      id: post.id,
-      title: post.title,
-      content: post.content,
-      category: post.category,
-      tags: post.tags,
-      images: post.images,
-      likes: post.likes,
-      views: post.views,
-      comments: post.comments,
-      author_id: post.authorId,
-      status: post.status,
-      excerpt: post.excerpt,
-      created_at: post.createdAt,
-      updated_at: post.updatedAt
-    }));
-  }
-
   try {
     const posts = await sql`
       SELECT p.*, u.nickname as author_nickname, u.avatar as author_avatar
@@ -228,27 +180,6 @@ export async function getPosts(): Promise<Post[]> {
 }
 
 export async function getPostById(id: string): Promise<Post | null> {
-  if (!isNeonAvailable || !sql) {
-    // Fallback to SQLite/JSON
-    const post = await sqliteDB.getPostById(id);
-    return post ? {
-      id: post.id,
-      title: post.title,
-      content: post.content,
-      category: post.category,
-      tags: post.tags,
-      images: post.images,
-      likes: post.likes,
-      views: post.views,
-      comments: post.comments,
-      author_id: post.authorId,
-      status: post.status,
-      excerpt: post.excerpt,
-      created_at: post.createdAt,
-      updated_at: post.updatedAt
-    } : null;
-  }
-
   try {
     const posts = await sql`
       SELECT p.*, u.nickname as author_nickname, u.avatar as author_avatar
@@ -264,43 +195,20 @@ export async function getPostById(id: string): Promise<Post | null> {
 }
 
 export async function createPost(
-  post: Omit<Post, "id" | "likes" | "views" | "comments" | "created_at" | "updated_at">
+  post: Omit<
+    Post,
+    "id" | "likes" | "views" | "comments" | "created_at" | "updated_at"
+  >
 ): Promise<Post> {
-  if (!isNeonAvailable || !sql) {
-    // Fallback to SQLite/JSON
-    const createdPost = await sqliteDB.createPost({
-      title: post.title,
-      content: post.content,
-      category: post.category,
-      tags: post.tags,
-      images: post.images,
-      status: post.status,
-      authorId: post.author_id,
-      excerpt: post.excerpt
-    });
-    return {
-      id: createdPost.id,
-      title: createdPost.title,
-      content: createdPost.content,
-      category: createdPost.category,
-      tags: createdPost.tags,
-      images: createdPost.images,
-      likes: createdPost.likes,
-      views: createdPost.views,
-      comments: createdPost.comments,
-      author_id: createdPost.authorId,
-      status: createdPost.status,
-      excerpt: createdPost.excerpt,
-      created_at: createdPost.createdAt,
-      updated_at: createdPost.updatedAt
-    };
-  }
-
   try {
     const id = Date.now().toString();
     const newPost = await sql`
       INSERT INTO posts (id, title, content, category, tags, images, author_id, status, excerpt) 
-      VALUES (${id}, ${post.title}, ${post.content}, ${post.category}, ${post.tags || []}, ${post.images || []}, ${post.author_id}, ${post.status || "published"}, ${post.excerpt || ""})
+      VALUES (${id}, ${post.title}, ${post.content}, ${post.category}, ${
+      post.tags || []
+    }, ${post.images || []}, ${post.author_id}, ${
+      post.status || "published"
+    }, ${post.excerpt || ""})
       RETURNING *
     `;
     return newPost[0] as Post;
@@ -311,28 +219,10 @@ export async function createPost(
 }
 
 // Simplified update function for common use cases
-export async function updatePost(id: string, updates: { likes?: number; views?: number; comments?: number }): Promise<Post | null> {
-  if (!isNeonAvailable || !sql) {
-    // Fallback to SQLite/JSON
-    const updatedPost = await sqliteDB.updatePost(id, updates);
-    return updatedPost ? {
-      id: updatedPost.id,
-      title: updatedPost.title,
-      content: updatedPost.content,
-      category: updatedPost.category,
-      tags: updatedPost.tags,
-      images: updatedPost.images,
-      likes: updatedPost.likes,
-      views: updatedPost.views,
-      comments: updatedPost.comments,
-      author_id: updatedPost.authorId,
-      status: updatedPost.status,
-      excerpt: updatedPost.excerpt,
-      created_at: updatedPost.createdAt,
-      updated_at: updatedPost.updatedAt
-    } : null;
-  }
-
+export async function updatePost(
+  id: string,
+  updates: { likes?: number; views?: number; comments?: number }
+): Promise<Post | null> {
   try {
     if (updates.likes !== undefined) {
       const result = await sql`
@@ -372,12 +262,6 @@ export async function updatePost(id: string, updates: { likes?: number; views?: 
 }
 
 export async function incrementPostViews(id: string): Promise<void> {
-  if (!isNeonAvailable || !sql) {
-    // Fallback to SQLite/JSON
-    await sqliteDB.incrementPostViews(id);
-    return;
-  }
-
   try {
     await sql`
       UPDATE posts 
@@ -390,16 +274,11 @@ export async function incrementPostViews(id: string): Promise<void> {
 }
 
 export async function deletePost(id: string): Promise<boolean> {
-  if (!isNeonAvailable || !sql) {
-    // Fallback to SQLite/JSON
-    return await sqliteDB.deletePost(id);
-  }
-
   try {
     // Delete related comments and reactions first
     await sql`DELETE FROM comments WHERE post_id = ${id}`;
     await sql`DELETE FROM reactions WHERE post_id = ${id}`;
-    
+
     // Delete the post
     const result = await sql`DELETE FROM posts WHERE id = ${id}`;
     return result.length === 0; // If no rows returned, deletion successful
@@ -409,6 +288,28 @@ export async function deletePost(id: string): Promise<boolean> {
   }
 }
 
+// Comment operations
+export async function getComments(): Promise<Comment[]> {
+  try {
+    const comments = await sql`SELECT * FROM comments ORDER BY created_at DESC`;
+    return comments as Comment[];
+  } catch (error) {
+    console.error("Error getting comments from Neon:", error);
+    return [];
+  }
+}
+
+// Reaction operations
+export async function getReactions(): Promise<Reaction[]> {
+  try {
+    const reactions = await sql`SELECT * FROM reactions ORDER BY created_at DESC`;
+    return reactions as Reaction[];
+  } catch (error) {
+    console.error("Error getting reactions from Neon:", error);
+    return [];
+  }
+}
+
 // Export database status
-export const isDatabaseReady = isNeonAvailable;
-export const databaseType = isNeonAvailable ? 'Neon PostgreSQL' : 'JSON Files';
+export const isDatabaseReady = true;
+export const databaseType = "Neon PostgreSQL";
