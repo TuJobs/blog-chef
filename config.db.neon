@@ -1,0 +1,19 @@
+Name: NEON_DATABASE_URL
+Value: postgresql://neondb_owner:npg_S4vadGptQAi6@ep-withered-bar-a1yy7c34-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+Environment: Production, Preview, Development
+
+Name: NODE_ENV  
+Value: production
+Environment: Production
+
+Name: CLOUDINARY_CLOUD_NAME
+Value: dqi6wnwx0
+Environment: Production, Preview, Development
+
+Name: CLOUDINARY_API_KEY
+Value: 846955579276391
+Environment: Production, Preview, Development
+
+Name: CLOUDINARY_API_SECRET
+Value: wn4eSjGoN5aFWrku2IkCgfV_Mm8
+Environment: Production, Preview, Development

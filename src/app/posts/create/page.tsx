@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAnonymousUser } from "@/contexts/AnonymousUserContext";
 import Header from "@/components/Header";
-import { Heart, ArrowLeft, Image as ImageIcon, Send } from "lucide-react";
+import ImageUpload from "@/components/ImageUpload";
+import { Heart, ArrowLeft, Send } from "lucide-react";
 import Link from "next/link";
 
 export default function CreatePostPage() {
@@ -219,29 +220,17 @@ export default function CreatePostPage() {
               </select>
             </div>
 
-            {/* Image URL */}
+            {/* Image Upload */}
             <div>
-              <label
-                htmlFor="image"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Link hình ảnh (tùy chọn)
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Hình ảnh (tùy chọn)
               </label>
-              <div className="relative">
-                <ImageIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  type="url"
-                  id="image"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleChange}
-                  placeholder="https://example.com/image.jpg"
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                />
-              </div>
-              <p className="text-xs text-gray-500 mt-1">
-                Dán link hình ảnh từ internet hoặc để trống
-              </p>
+              <ImageUpload
+                currentImage={formData.image}
+                onImageUpload={(url) =>
+                  setFormData((prev) => ({ ...prev, image: url }))
+                }
+              />
             </div>
 
             {/* Hashtags */}

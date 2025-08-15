@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Vercel Environment Variables Setup Script
+echo "🚀 Setting up Vercel Environment Variables..."
+
+# Check if vercel CLI is logged in
+echo "📝 Please ensure you're logged into Vercel CLI first"
+echo "   Run: npx vercel login"
+echo ""
+
+echo "🔧 Copy these commands to your terminal (one by one):"
+echo ""
+echo "npx vercel env add NEON_DATABASE_URL"
+echo "# When prompted, paste: postgresql://neondb_owner:npg_S4vadGptQAi6@ep-withered-bar-a1yy7c34-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+echo "# Select: Production, Preview, Development"
+echo ""
+echo "npx vercel env add NODE_ENV"  
+echo "# When prompted, paste: production"
+echo "# Select: Production"
+echo ""
+echo "npx vercel env add CLOUDINARY_CLOUD_NAME"
+echo "# When prompted, paste: dqi6wnwx0"
+echo "# Select: Production, Preview, Development"
+echo ""
+echo "npx vercel env add CLOUDINARY_API_KEY"
+echo "# When prompted, paste: 846955579276391"
+echo "# Select: Production, Preview, Development"
+echo ""
+echo "npx vercel env add CLOUDINARY_API_SECRET"
+echo "# When prompted, paste: wn4eSjGoN5aFWrku2IkCgfV_Mm8"
+echo "# Select: Production, Preview, Development"
+echo ""
+echo "🔄 After adding all variables, redeploy:"
+echo "npx vercel --prod"
+echo ""
+echo "✅ Then test: https://blog-chef-three.vercel.app/api/init-db"
