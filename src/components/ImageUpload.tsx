@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Upload, X, Image as ImageIcon, Loader2 } from "lucide-react";
 
 interface ImageUploadProps {
@@ -14,9 +14,16 @@ export default function ImageUpload({
 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState(currentImage || "");
+  const [previewUrl, setPreviewUrl] = useState("");
   const [cloudinaryId, setCloudinaryId] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Initialize with currentImage when component mounts or currentImage changes
+  useEffect(() => {
+    if (currentImage) {
+      setPreviewUrl(currentImage);
+    }
+  }, [currentImage]);
 
   const handleFiles = async (files: FileList) => {
     if (files.length === 0) return;
@@ -47,11 +54,11 @@ export default function ImageUpload({
 
     setIsUploading(true);
 
-    try {
-      // Create preview immediately
-      const objectUrl = URL.createObjectURL(file);
-      setPreviewUrl(objectUrl);
+    // Create preview immediately
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
 
+    try {
       // Upload to server
       const formData = new FormData();
       formData.append("image", file);
@@ -75,6 +82,8 @@ export default function ImageUpload({
     } catch (error) {
       console.error("Upload error:", error);
       alert("Có lỗi xảy ra khi upload hình ảnh. Vui lòng thử lại!");
+      // Revert to previous preview or current image
+      URL.revokeObjectURL(objectUrl);
       setPreviewUrl(currentImage || "");
     } finally {
       setIsUploading(false);

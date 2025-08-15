@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
 
     // Convert file to base64
     const buffer = Buffer.from(await file.arrayBuffer());
-    const base64 = buffer.toString('base64');
+    const base64 = buffer.toString("base64");
     const dataURI = `data:${file.type};base64,${base64}`;
 
     // Upload to Cloudinary
@@ -66,8 +66,8 @@ export async function POST(request: NextRequest) {
       resource_type: "image",
       transformation: [
         { width: 800, height: 800, crop: "limit" },
-        { quality: "auto", format: "auto" }
-      ]
+        { quality: "auto", format: "auto" },
+      ],
     });
 
     return NextResponse.json({
@@ -112,7 +112,7 @@ export async function DELETE(request: NextRequest) {
     // Delete from Cloudinary
     const result = await cloudinary.uploader.destroy(cloudinary_id);
 
-    if (result.result !== 'ok') {
+    if (result.result !== "ok") {
       return NextResponse.json(
         {
           success: false,
