@@ -146,7 +146,7 @@ export async function GET(request: NextRequest) {
             nickname: "Người dùng ẩn danh",
             avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.author_id}`,
           },
-          images: [],
+          images: post.images || [],
           status: "published",
           views: post.views || 0,
           likes: post.likes || 0,
