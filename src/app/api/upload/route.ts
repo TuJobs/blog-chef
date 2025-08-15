@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
+import { v2 as cloudinary } from "cloudinary";
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // POST - Upload hình ảnh
 export async function POST(request: NextRequest) {
@@ -49,32 +55,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create upload directory
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await fs.mkdir(uploadDir, { recursive: true });
-
-    // Generate unique filename
-    const timestamp = Date.now();
-    const randomStr = Math.random().toString(36).substring(2, 15);
-    const extension = path.extname(file.name);
-    const filename = `${timestamp}_${randomStr}${extension}`;
-    const filepath = path.join(uploadDir, filename);
-
-    // Save file
+    // Convert file to base64
     const buffer = Buffer.from(await file.arrayBuffer());
-    await fs.writeFile(filepath, buffer);
+    const base64 = buffer.toString('base64');
+    const dataURI = `data:${file.type};base64,${base64}`;
 
-    // Return file URL
-    const fileUrl = `/uploads/${filename}`;
+    // Upload to Cloudinary
+    const result = await cloudinary.uploader.upload(dataURI, {
+      folder: "blog-chef/uploads",
+      resource_type: "image",
+      transformation: [
+        { width: 800, height: 800, crop: "limit" },
+        { quality: "auto", format: "auto" }
+      ]
+    });
 
     return NextResponse.json({
       success: true,
       message: "Upload hình ảnh thành công",
       data: {
-        filename,
-        url: fileUrl,
+        filename: result.public_id,
+        url: result.secure_url,
         size: file.size,
         type: file.type,
+        cloudinary_id: result.public_id,
       },
     });
   } catch (error) {
@@ -82,7 +86,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        message: "Lỗi khi upload hình ảnh",
+        message: "Lỗi khi upload hình ảnh: " + (error as Error).message,
       },
       { status: 500 }
     );
@@ -93,35 +97,30 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const body = await request.json();
-    const { filename } = body;
+    const { cloudinary_id } = body;
 
-    if (!filename) {
+    if (!cloudinary_id) {
       return NextResponse.json(
         {
           success: false,
-          message: "Tên file không được cung cấp",
+          message: "ID Cloudinary không được cung cấp",
         },
         { status: 400 }
       );
     }
 
-    const filepath = path.join(process.cwd(), "public", "uploads", filename);
+    // Delete from Cloudinary
+    const result = await cloudinary.uploader.destroy(cloudinary_id);
 
-    // Check if file exists
-    try {
-      await fs.access(filepath);
-    } catch (error) {
+    if (result.result !== 'ok') {
       return NextResponse.json(
         {
           success: false,
-          message: "File không tồn tại",
+          message: "Không thể xóa hình ảnh từ Cloudinary",
         },
         { status: 404 }
       );
     }
-
-    // Delete file
-    await fs.unlink(filepath);
 
     return NextResponse.json({
       success: true,
@@ -132,7 +131,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        message: "Lỗi khi xóa hình ảnh",
+        message: "Lỗi khi xóa hình ảnh: " + (error as Error).message,
       },
       { status: 500 }
     );

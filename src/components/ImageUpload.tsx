@@ -15,6 +15,7 @@ export default function ImageUpload({
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(currentImage || "");
+  const [cloudinaryId, setCloudinaryId] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFiles = async (files: FileList) => {
@@ -66,6 +67,7 @@ export default function ImageUpload({
         // Clean up object URL and use server URL
         URL.revokeObjectURL(objectUrl);
         setPreviewUrl(result.data.url);
+        setCloudinaryId(result.data.cloudinary_id);
         onImageUpload(result.data.url);
       } else {
         throw new Error(result.message);
@@ -107,6 +109,7 @@ export default function ImageUpload({
 
   const removeImage = () => {
     setPreviewUrl("");
+    setCloudinaryId("");
     onImageUpload("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
