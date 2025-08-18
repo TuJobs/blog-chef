@@ -38,6 +38,55 @@ export default function HomePage() {
   const { user } = useAnonymousUser();
   const [posts, setPosts] = useState<Post[]>([]);
 
+  // Function to get default image based on category
+  const getDefaultImage = (category: string): string => {
+    const defaultImages = {
+      cooking: [
+        "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=200&fit=crop", // cooking pot
+        "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=200&fit=crop", // pizza
+        "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=200&fit=crop", // pancakes
+      ],
+      household: [
+        "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=200&fit=crop", // clean kitchen
+        "https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=400&h=200&fit=crop", // home interior
+        "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=200&fit=crop", // organized home
+      ],
+      beauty: [
+        "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=200&fit=crop", // makeup
+        "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=200&fit=crop", // skincare
+        "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400&h=200&fit=crop", // beauty products
+      ],
+      baby: [
+        "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=400&h=200&fit=crop", // baby items
+        "https://images.unsplash.com/photo-1577565177023-d0f29c864fb1?w=400&h=200&fit=crop", // baby care
+        "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400&h=200&fit=crop", // baby room
+      ],
+      parenting: [
+        "https://images.unsplash.com/photo-1544537150-6e4ec999d5c6?w=400&h=200&fit=crop", // family
+        "https://images.unsplash.com/photo-1577565177023-d0f29c864fb1?w=400&h=200&fit=crop", // parenting
+        "https://images.unsplash.com/photo-1566004100631-35d015d6a491?w=400&h=200&fit=crop", // child care
+      ],
+      health: [
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop", // yoga
+        "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=200&fit=crop", // healthy food
+        "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=200&fit=crop", // wellness
+      ],
+      lifestyle: [
+        "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=200&fit=crop", // lifestyle
+        "https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=400&h=200&fit=crop", // relax
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=200&fit=crop", // meditation
+      ],
+      other: [
+        "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=400&h=200&fit=crop",
+        "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=400&h=200&fit=crop",
+        "https://images.unsplash.com/photo-1574645065931-2a9c4de10100?w=400&h=200&fit=crop",
+      ],
+    };
+
+    const categoryImages = defaultImages[category as keyof typeof defaultImages] || defaultImages.other;
+    return categoryImages[Math.floor(Math.random() * categoryImages.length)];
+  };
+
   useEffect(() => {
     async function loadPosts() {
       try {
@@ -69,13 +118,7 @@ export default function HomePage() {
                 image:
                   post.images && post.images.length > 0
                     ? post.images[0]
-                    : `https://images.unsplash.com/photo-${
-                        [
-                          "1586190848861-99aa4a171e90",
-                          "1558618047-3c8c76ca7d13",
-                          "1574645065931-2a9c4de10100",
-                        ][Math.floor(Math.random() * 3)]
-                      }?w=400&h=200&fit=crop`,
+                    : getDefaultImage(post.category),
                 createdAt: new Date(post.createdAt)
                   .toLocaleDateString("vi-VN", {
                     month: "numeric",
