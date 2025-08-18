@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getPosts, createPost, createUser, getUserById } from "@/lib/database-service";
+import {
+  getPosts,
+  createPost,
+  createUser,
+  getUserById,
+} from "@/lib/database-service";
 
 // POST - Tạo bài viết mới
 export async function POST(request: NextRequest) {
