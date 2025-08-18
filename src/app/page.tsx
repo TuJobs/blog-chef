@@ -56,7 +56,7 @@ export default function HomePage() {
                 category: string;
                 likes?: number;
                 comments?: number;
-                images?: Array<{ url: string }>;
+                images?: string[];
                 createdAt: string;
               }) => ({
                 id: parseInt(post.id),
@@ -68,7 +68,7 @@ export default function HomePage() {
                 comments: post.comments || Math.floor(Math.random() * 20) + 1,
                 image:
                   post.images && post.images.length > 0
-                    ? post.images[0].url
+                    ? post.images[0]
                     : `https://images.unsplash.com/photo-${
                         [
                           "1586190848861-99aa4a171e90",
